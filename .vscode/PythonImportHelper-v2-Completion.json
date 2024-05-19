@@ -1,0 +1,69 @@
+[
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "Client",
+        "importPath": "gradio_client",
+        "description": "gradio_client",
+        "isExtraImport": true,
+        "detail": "gradio_client",
+        "documentation": {}
+    },
+    {
+        "label": "file",
+        "importPath": "gradio_client",
+        "description": "gradio_client",
+        "isExtraImport": true,
+        "detail": "gradio_client",
+        "documentation": {}
+    },
+    {
+        "label": "run_model",
+        "kind": 2,
+        "importPath": "model_client",
+        "description": "model_client",
+        "peekOfCode": "def run_model(background_image_url, garment_image_url):\n    client = Client(\"yisol/IDM-VTON\")\n    result = client.predict(\n        dict={\"background\": file(background_image_url), \"layers\": [], \"composite\": None},\n        garm_img=file(garment_image_url),\n        garment_des=\"Hello!!\",\n        is_checked=True,\n        is_checked_crop=False,\n        denoise_steps=30,\n        seed=42,",
+        "detail": "model_client",
+        "documentation": {}
+    },
+    {
+        "label": "predict",
+        "kind": 2,
+        "importPath": "model_client",
+        "description": "model_client",
+        "peekOfCode": "def predict():\n    data = request.get_json()\n    background_image_url = data['background_image_url']\n    garment_image_url = data['garment_image_url']\n    result = run_model(background_image_url, garment_image_url)\n    return jsonify(result)\nif __name__ == '__main__':\n    app.run(debug=True, port=3000)",
+        "detail": "model_client",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "model_client",
+        "description": "model_client",
+        "peekOfCode": "app = Flask(__name__)\ndef run_model(background_image_url, garment_image_url):\n    client = Client(\"yisol/IDM-VTON\")\n    result = client.predict(\n        dict={\"background\": file(background_image_url), \"layers\": [], \"composite\": None},\n        garm_img=file(garment_image_url),\n        garment_des=\"Hello!!\",\n        is_checked=True,\n        is_checked_crop=False,\n        denoise_steps=30,",
+        "detail": "model_client",
+        "documentation": {}
+    }
+]

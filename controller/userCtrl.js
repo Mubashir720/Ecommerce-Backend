@@ -654,8 +654,90 @@ const createCheckoutSession = async (req, res) => {
   }
 };
 
+const searchProducts = asyncHandler(async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    // Split the query into individual words
+    const queryWords = query.toLowerCase().split(/\s+/);
+
+    // Use MongoDB's text search or regular expressions for case insensitivity and partial match
+    const products = await Product.find({
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } }, // Case insensitive search for title
+        { description: { $regex: new RegExp(query, "i") } }, // Case insensitive search for description
+      ],
+    });
+
+    // Calculate the number of words matched for each product
+    const productsWithMatchCount = products.map((product) => {
+      const titleWords = product.title.toLowerCase().split(/\s+/);
+      const matchedWords = titleWords.filter((word) =>
+        queryWords.includes(word)
+      );
+      return { ...product.toObject(), matchCount: matchedWords.length };
+    });
+
+    // Sort products based on the number of matched words (highest to lowest)
+    const sortedProducts = productsWithMatchCount.sort(
+      (a, b) => b.matchCount - a.matchCount
+    );
+
+    res.json(sortedProducts);
+  } catch (error) {
+    console.error("Error in searchProducts:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+const myNewFunction = async (req, res) => {
+  try {
+    // Your logic here
+    res.json({ message: "New function executed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const postReview = asyncHandler(async (req, res) => {
+  const { productId, comment } = req.body;
+  const { _id: userId } = req.user;
+
+  // Validate productId and userId
+  validateMongodbId(productId);
+  validateMongodbId(userId);
+
+  try {
+    // Find the product by ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      throw new Error("Product not found.");
+    }
+
+    // Check if the user has already posted a comment for this product
+    const existingComment = product.comments.find(
+      (c) => c.userId.toString() === userId.toString()
+    );
+    if (existingComment) {
+      throw new Error("User has already posted a comment for this product.");
+    }
+
+    // Add the comment to the product's comments array
+    product.comments.push({ userId, comment });
+    await product.save();
+
+    res.status(201).json({ message: "Comment posted successfully", product });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = {
   createUser,
+
+  postReview,
+  myNewFunction,
+  searchProducts,
   loginUserCtrl,
   getallUser,
   getaUser,
